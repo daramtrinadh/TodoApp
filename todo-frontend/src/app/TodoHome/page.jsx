@@ -10,16 +10,27 @@ import './TodoHome.css';
 const TodoHome = () => {
     const [todoItem, setTodoItem] = useState("");
     const [todoList, setTodoList] = useState([]);
-    const router=useRouter()
+    const [token, setToken] = useState(null);
+    const router = useRouter();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     useEffect(() => {
-        const fetchTodos = async () => {
+        const fetchToken = () => {
             if (typeof window !== 'undefined') {
+                const storedToken = localStorage.getItem("token");
+                setToken(storedToken);
+            }
+        };
+        fetchToken();
+    }, []);
+
+    useEffect(() => {
+        const fetchTodos = async () => {
+            if (token) {
                 const response = await fetch("http://localhost:5000/api/todos", {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                 });
@@ -32,14 +43,17 @@ const TodoHome = () => {
             }
         };
         fetchTodos();
-    }, []);
+    }, [token]);
 
     const onEnterTask = (e) => setTodoItem(e.target.value);
 
-    const onLogout=()=>{
-        localStorage.removeItem("token")
-        router.push('/');
-    }
+    const onLogout = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem("token");
+            setToken(null);
+            router.push('/');
+        }
+    };
 
     const onAddTask = async () => {
         if (todoItem.trim() === "") return;
@@ -49,7 +63,7 @@ const TodoHome = () => {
         const response = await fetch("http://localhost:5000/api/todos", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(newTask),
@@ -68,7 +82,7 @@ const TodoHome = () => {
         const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
             method: "DELETE",
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
         });
@@ -85,7 +99,7 @@ const TodoHome = () => {
         const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
             method: "PUT",
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ text: newText }),
@@ -106,7 +120,7 @@ const TodoHome = () => {
         const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
             method: "PUT",
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(updatedTodo),
