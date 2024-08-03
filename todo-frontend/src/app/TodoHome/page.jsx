@@ -15,18 +15,20 @@ const TodoHome = () => {
 
     useEffect(() => {
         const fetchTodos = async () => {
-            const response = await fetch("http://localhost:5000/api/todos", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setTodoList(data);
-            } else {
-                console.error(data.error);
+            if (typeof window !== 'undefined') {
+                const response = await fetch("http://localhost:5000/api/todos", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setTodoList(data);
+                } else {
+                    console.error(data.error);
+                }
             }
         };
         fetchTodos();
