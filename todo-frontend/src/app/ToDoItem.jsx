@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import EditModal from "./EditModal"; 
 import './ToDoItem.css'
 
-const page = ({ eachTodo, onEditTodo, onDeleteTodo, onToggleComplete }) => {
+const ToDoItem = ({ eachTodo, onEditTodo, onDeleteTodo, onToggleComplete }) => {
     const { _id, text, completed } = eachTodo; 
     const [isEditing, setIsEditing] = useState(false);
     const [newText, setNewText] = useState(text);
@@ -92,4 +92,4 @@ const page = ({ eachTodo, onEditTodo, onDeleteTodo, onToggleComplete }) => {
     );
 };
 
-export default page;
+export default ToDoItem;
