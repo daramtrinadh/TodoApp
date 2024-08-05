@@ -10,24 +10,15 @@ import './TodoHome.css';
 const TodoHome = () => {
     const [todoItem, setTodoItem] = useState("");
     const [todoList, setTodoList] = useState([]);
-    const [token, setToken] = useState(null);
     const router = useRouter();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
-    useEffect(() => {
-        const fetchToken = () => {
-            if (typeof window !== 'undefined') {
-                const storedToken = localStorage.getItem("token");
-                setToken(storedToken);
-            }
-        };
-        fetchToken();
-    }, []);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
 
     useEffect(() => {
         const fetchTodos = async () => {
             if (token) {
-                const response = await fetch("http://localhost:5000/api/todos", {
+                const response = await fetch("https://todoapp-zpso.onrender.com/api/todos", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -49,8 +40,7 @@ const TodoHome = () => {
 
     const onLogout = () => {
         if (typeof window !== 'undefined') {
-            localStorage.removeItem("token");
-            setToken(null);
+            localStorage.removeItem('token');
             router.push('/');
         }
     };
@@ -60,7 +50,7 @@ const TodoHome = () => {
 
         const newTask = { text: todoItem, completed: false };
 
-        const response = await fetch("http://localhost:5000/api/todos", {
+        const response = await fetch("https://todoapp-zpso.onrender.com/api/todos", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -79,7 +69,7 @@ const TodoHome = () => {
     };
 
     const onDeleteTodo = async (id) => {
-        const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+        const response = await fetch(`https://todoapp-zpso.onrender.com/api/todos/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -96,7 +86,7 @@ const TodoHome = () => {
     };
 
     const onEditTodo = async (id, newText) => {
-        const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+        const response = await fetch(`https://todoapp-zpso.onrender.com/api/todos/${id}`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -117,7 +107,7 @@ const TodoHome = () => {
         const todo = todoList.find((todo) => todo._id === id);
         const updatedTodo = { ...todo, completed: !todo.completed };
 
-        const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+        const response = await fetch(`https://todoapp-zpso.onrender.com/api/todos/${id}`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -164,28 +154,25 @@ const TodoHome = () => {
                     <Modal 
                         backdrop="opaque" 
                         isOpen={isOpen} 
+                        onClose={onClose}
                         onOpenChange={onOpenChange}
                         classNames={{
                         backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
                         }}
                     >
                         <ModalContent>
-                        {(onClose) => (
-                            <>
                             <ModalHeader className="flex flex-col gap-1">Confirm Logout</ModalHeader>
                             <ModalBody>
                                 <p>Are you sure you want to log out?</p>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" onPress={() => { onClose(); }}>
-                                Cancel
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Cancel
                                 </Button>
                                 <Button color="primary" onClick={onLogout}>
-                                Logout
+                                    Logout
                                 </Button>
                             </ModalFooter>
-                            </>
-                        )}
                         </ModalContent>
                     </Modal>
 
